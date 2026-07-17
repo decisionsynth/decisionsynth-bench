@@ -75,7 +75,11 @@ def build_validator(provider: str):
                 text = text.strip("`\n")
                 if text.startswith("json"):
                     text = text[4:]
-            return json.loads(text)
+            try:
+                return json.loads(text)
+            except json.JSONDecodeError:
+                obj, _ = json.JSONDecoder().raw_decode(text.lstrip())
+                return obj
 
     else:
         from google import genai

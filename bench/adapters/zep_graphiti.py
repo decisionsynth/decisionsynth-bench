@@ -219,7 +219,11 @@ def make_answer_fn(provider: str, api_key: str):
                         text = text.strip("`\n")
                         if text.startswith("json"):
                             text = text[4:]
-                    return json.loads(text)
+                    try:
+                        return json.loads(text)
+                    except json.JSONDecodeError:
+                        obj, _ = json.JSONDecoder().raw_decode(text.lstrip())
+                        return obj
                 resp = client.models.generate_content(
                     model=LLM_MODEL,
                     contents=prompt,
