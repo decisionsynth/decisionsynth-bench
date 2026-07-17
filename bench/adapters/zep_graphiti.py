@@ -202,19 +202,23 @@ def make_answer_fn(provider: str, api_key: str):
         for attempt in range(6):
             try:
                 if provider == "anthropic":
+                    nudge = "" if attempt == 0 else "\n\nIMPORTANT: your previous response was empty or not valid JSON. Return ONLY the JSON object."
                     msg = aclient.messages.create(
                         model=ANTHROPIC_MODEL,
-                        max_tokens=2048,
+                        max_tokens=4096,
                         temperature=0.0,
                         messages=[{
                             "role": "user",
                             "content": prompt
                             + "\n\nRespond with ONLY a JSON object matching this schema "
                             + "(no prose, no code fences): "
-                            + json.dumps(ANSWER_SCHEMAS[task["task_type"]]),
+                            + json.dumps(ANSWER_SCHEMAS[task["task_type"]])
+                            + nudge,
                         }],
                     )
-                    text = msg.content[0].text.strip()
+                    text = (msg.content[0].text or "").strip() if msg.content else ""
+                    if not text:
+                        raise ValueError("empty model response")
                     if text.startswith("```"):
                         text = text.strip("`\n")
                         if text.startswith("json"):
