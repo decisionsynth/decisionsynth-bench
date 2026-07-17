@@ -285,15 +285,18 @@ async def main() -> None:
             )
             for e in chunk
         ]
-        for attempt in range(4):
+        for attempt in range(8):
             try:
                 await graphiti.add_episode_bulk(raw, group_id=group_id)
                 break
             except Exception as exc:  # noqa: BLE001 — retry transient API errors
-                if attempt == 3:
+                if attempt == 7:
                     raise
-                print(f"[graphiti] bulk chunk retry after: {exc!r}", flush=True)
-                await asyncio.sleep(min(2 ** attempt * 5, 60))
+                wait = min(2 ** attempt * 10, 300)
+                if "RateLimit" in type(exc).__name__ or "429" in str(exc):
+                    wait = max(wait, 90)
+                print(f"[graphiti] bulk chunk retry in {wait}s after: {exc!r}", flush=True)
+                await asyncio.sleep(wait)
         done.update(e["episode_id"] for e in chunk)
         done_path.write_text(json.dumps(sorted(done)))
         print(f"[graphiti] ingested {len(done)}/{len(episodes)}", flush=True)
