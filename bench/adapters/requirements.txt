@@ -1,0 +1,8 @@
+# Vendor-adapter dependencies (Python 3.11). The zero-key quickstart path
+# (naive baseline + scorer) needs none of these — Node + tsx only.
+# Exact versions used for the maintainer-run scoreboard rows:
+google-genai==2.12.1
+mem0ai==2.0.12
+faiss-cpu==1.14.3
+graphiti-core[google-genai]==0.29.2
+letta-client==1.12.1
