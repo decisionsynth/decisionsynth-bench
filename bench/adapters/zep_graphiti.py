@@ -42,6 +42,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 LLM_MODEL = "gemini-2.5-flash"
+ANTHROPIC_MODEL = "claude-haiku-4-5-20251001"
 SMALL_MODEL = "gemini-3.1-flash-lite"
 EMBED_MODEL = "gemini-embedding-001"
 DEFAULT_GROUP_ID = "decisionsynth-corpus"
@@ -173,11 +174,17 @@ TYPE_INSTRUCTIONS = {
 }
 
 
-def make_answer_fn(api_key: str):
-    from google import genai
-    from google.genai import types as gtypes
+def make_answer_fn(provider: str, api_key: str):
+    """provider: which model family CREATES answers ('gemini' or 'anthropic')."""
+    if provider == "anthropic":
+        import anthropic as _anthropic
 
-    client = genai.Client(api_key=api_key)
+        aclient = _anthropic.Anthropic(api_key=api_key)
+    else:
+        from google import genai
+        from google.genai import types as gtypes
+
+        client = genai.Client(api_key=api_key)
 
     def generate(task: dict, memories: list) -> dict:
         ctx_lines = []
@@ -194,6 +201,25 @@ def make_answer_fn(api_key: str):
         )
         for attempt in range(6):
             try:
+                if provider == "anthropic":
+                    msg = aclient.messages.create(
+                        model=ANTHROPIC_MODEL,
+                        max_tokens=2048,
+                        temperature=0.0,
+                        messages=[{
+                            "role": "user",
+                            "content": prompt
+                            + "\n\nRespond with ONLY a JSON object matching this schema "
+                            + "(no prose, no code fences): "
+                            + json.dumps(ANSWER_SCHEMAS[task["task_type"]]),
+                        }],
+                    )
+                    text = msg.content[0].text.strip()
+                    if text.startswith("```"):
+                        text = text.strip("`\n")
+                        if text.startswith("json"):
+                            text = text[4:]
+                    return json.loads(text)
                 resp = client.models.generate_content(
                     model=LLM_MODEL,
                     contents=prompt,
@@ -225,6 +251,7 @@ async def main() -> None:
     ap.add_argument("qa")
     ap.add_argument("out")
     ap.add_argument("--k", type=int, default=5)
+    ap.add_argument("--llm", choices=["gemini", "anthropic"], default="gemini", help="model family that CREATES (extraction where applicable + answers)")
     ap.add_argument("--data-dir", default=".graphiti-bench")
     ap.add_argument("--search-limit", type=int, default=25)
     ap.add_argument("--bulk-chunk", type=int, default=16)
@@ -253,12 +280,26 @@ async def main() -> None:
     data_dir = Path(args.data_dir)
     data_dir.mkdir(parents=True, exist_ok=True)
 
-    llm_config = LLMConfig(api_key=api_key, model=LLM_MODEL, small_model=SMALL_MODEL, temperature=0.0)
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
+    if args.llm == "anthropic" and not anthropic_key:
+        sys.exit("ANTHROPIC_API_KEY is required with --llm anthropic")
+    create_key = anthropic_key if args.llm == "anthropic" else api_key
+    if args.llm == "anthropic":
+        from graphiti_core.llm_client.anthropic_client import AnthropicClient
+
+        llm_client = AnthropicClient(
+            config=LLMConfig(api_key=anthropic_key, model=ANTHROPIC_MODEL, small_model=ANTHROPIC_MODEL, temperature=0.0)
+        )
+    else:
+        llm_client = GeminiClient(
+            config=LLMConfig(api_key=api_key, model=LLM_MODEL, small_model=SMALL_MODEL, temperature=0.0),
+            thinking_config=gtypes.ThinkingConfig(thinking_budget=0),
+        )
     graphiti = Graphiti(
         args.neo4j_uri,
         args.neo4j_user,
         args.neo4j_pass,
-        llm_client=GeminiClient(config=llm_config, thinking_config=gtypes.ThinkingConfig(thinking_budget=0)),
+        llm_client=llm_client,
         embedder=GeminiEmbedder(config=GeminiEmbedderConfig(api_key=api_key, embedding_model=EMBED_MODEL)),
         cross_encoder=GeminiRerankerClient(config=LLMConfig(api_key=api_key, model=SMALL_MODEL)),
     )
@@ -309,11 +350,11 @@ async def main() -> None:
     print(f"[graphiti] {len(uuid_to_eid)} episodic nodes in graph", flush=True)
 
     # ── answer (checkpointed) ──
-    partial_path = data_dir / f"answers-partial-{Path(args.qa).stem}.json"
+    partial_path = data_dir / f"answers-partial-{args.llm}-{Path(args.qa).stem}.json"
     answers = json.loads(partial_path.read_text()) if partial_path.exists() else {}
     todo_tasks = [t for t in tasks if t["task_id"] not in answers]
     print(f"[graphiti] answering: {len(answers)} done, {len(todo_tasks)} to go", flush=True)
-    generate = make_answer_fn(api_key)
+    generate = make_answer_fn(args.llm, create_key)
     sem = asyncio.Semaphore(args.answer_concurrency)
     write_lock = asyncio.Lock()
     counter = {"n": 0}
@@ -353,6 +394,7 @@ async def main() -> None:
                 "task_id": clean["task_id"],
                 "evidence_ids": evidence,
                 "answer_key": answer_key,
+                "_context": mems,
             }
             counter["n"] += 1
             if counter["n"] % 50 == 0 or counter["n"] == len(todo_tasks):
@@ -361,10 +403,17 @@ async def main() -> None:
 
     await asyncio.gather(*(answer_one(t) for t in todo_tasks))
 
-    ordered = [answers[t["task_id"]] for t in tasks if t["task_id"] in answers]
+    system = SYSTEM_NAME if args.llm == "gemini" else f"{SYSTEM_NAME}@{ANTHROPIC_MODEL}"
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps({"system": SYSTEM_NAME, "answers": ordered}, indent=2) + "\n")
+    contexts = {tid: a.get("_context", []) for tid, a in answers.items()}
+    Path(str(out) + ".contexts.json").write_text(json.dumps(contexts))
+    ordered = [
+        {k: v for k, v in answers[t["task_id"]].items() if k != "_context"}
+        for t in tasks
+        if t["task_id"] in answers
+    ]
+    out.write_text(json.dumps({"system": system, "answers": ordered}, indent=2) + "\n")
     print(f"[graphiti] {SYSTEM_NAME}: answered {len(ordered)} tasks over {len(episodes)} episodes → {out}", flush=True)
     await graphiti.close()
 

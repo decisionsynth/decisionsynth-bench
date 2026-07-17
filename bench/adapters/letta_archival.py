@@ -51,6 +51,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 LLM_MODEL = "gemini-2.5-flash"
+ANTHROPIC_MODEL = "claude-haiku-4-5-20251001"
 AGENT_MODEL = "google_ai/gemini-2.5-flash"
 # Letta 0.16.8 implements server-side embeddings only for OpenAI-compatible
 # backends, so the embedder is gemini-embedding-001 spoken over Google's
@@ -191,11 +192,17 @@ TYPE_INSTRUCTIONS = {
 }
 
 
-def make_answer_fn(api_key: str):
-    from google import genai
-    from google.genai import types as gtypes
+def make_answer_fn(provider: str, api_key: str):
+    """provider: which model family CREATES answers ('gemini' or 'anthropic')."""
+    if provider == "anthropic":
+        import anthropic as _anthropic
 
-    client = genai.Client(api_key=api_key)
+        aclient = _anthropic.Anthropic(api_key=api_key)
+    else:
+        from google import genai
+        from google.genai import types as gtypes
+
+        client = genai.Client(api_key=api_key)
 
     def generate(task: dict, memories: list) -> dict:
         ctx_lines = []
@@ -212,6 +219,25 @@ def make_answer_fn(api_key: str):
         )
         for attempt in range(6):
             try:
+                if provider == "anthropic":
+                    msg = aclient.messages.create(
+                        model=ANTHROPIC_MODEL,
+                        max_tokens=2048,
+                        temperature=0.0,
+                        messages=[{
+                            "role": "user",
+                            "content": prompt
+                            + "\n\nRespond with ONLY a JSON object matching this schema "
+                            + "(no prose, no code fences): "
+                            + json.dumps(ANSWER_SCHEMAS[task["task_type"]]),
+                        }],
+                    )
+                    text = msg.content[0].text.strip()
+                    if text.startswith("```"):
+                        text = text.strip("`\n")
+                        if text.startswith("json"):
+                            text = text[4:]
+                    return json.loads(text)
                 resp = client.models.generate_content(
                     model=LLM_MODEL,
                     contents=prompt,
@@ -243,6 +269,7 @@ def main() -> None:
     ap.add_argument("qa")
     ap.add_argument("out")
     ap.add_argument("--k", type=int, default=5)
+    ap.add_argument("--llm", choices=["gemini", "anthropic"], default="gemini", help="model family that CREATES (extraction where applicable + answers)")
     ap.add_argument("--data-dir", default=".letta-bench")
     ap.add_argument("--base-url", default=os.environ.get("LETTA_BASE_URL", "http://localhost:8283"))
     ap.add_argument("--search-limit", type=int, default=25)
@@ -252,7 +279,11 @@ def main() -> None:
 
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        sys.exit("GEMINI_API_KEY is required")
+        sys.exit("GEMINI_API_KEY is required (embeddings)")
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
+    if args.llm == "anthropic" and not anthropic_key:
+        sys.exit("ANTHROPIC_API_KEY is required with --llm anthropic")
+    create_key = anthropic_key if args.llm == "anthropic" else api_key
 
     from letta_client import Letta
 
@@ -316,11 +347,11 @@ def main() -> None:
         done_path.write_text(json.dumps(sorted(done)))
 
     # ── answer (checkpointed) ──
-    partial_path = data_dir / f"answers-partial-{Path(args.qa).stem}.json"
+    partial_path = data_dir / f"answers-partial-{args.llm}-{Path(args.qa).stem}.json"
     answers = json.loads(partial_path.read_text()) if partial_path.exists() else {}
     todo_tasks = [t for t in tasks if t["task_id"] not in answers]
     print(f"[letta] answering: {len(answers)} done, {len(todo_tasks)} to go", flush=True)
-    generate = make_answer_fn(api_key)
+    generate = make_answer_fn(args.llm, create_key)
 
     def passage_episode_id(p) -> str | None:
         tags = getattr(p, "tags", None) or []
@@ -350,7 +381,7 @@ def main() -> None:
                 evidence.append(eid)
             mems.append({"episode_id": eid, "text": getattr(h, "content", "") or ""})
         answer_key = generate(clean, mems)
-        return clean["task_id"], {"task_id": clean["task_id"], "evidence_ids": evidence, "answer_key": answer_key}
+        return clean["task_id"], {"task_id": clean["task_id"], "evidence_ids": evidence, "answer_key": answer_key, "_context": mems}
 
     if todo_tasks:
         with ThreadPoolExecutor(max_workers=args.answer_workers) as pool:
@@ -367,10 +398,17 @@ def main() -> None:
                         partial_path.write_text(json.dumps(answers))
                         print(f"[letta] answered {len(answers)}/{len(tasks)}", flush=True)
 
-    ordered = [answers[t["task_id"]] for t in tasks if t["task_id"] in answers]
+    system = SYSTEM_NAME if args.llm == "gemini" else f"{SYSTEM_NAME}@{ANTHROPIC_MODEL}"
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps({"system": SYSTEM_NAME, "answers": ordered}, indent=2) + "\n")
+    contexts = {tid: a.get("_context", []) for tid, a in answers.items()}
+    Path(str(out) + ".contexts.json").write_text(json.dumps(contexts))
+    ordered = [
+        {k: v for k, v in answers[t["task_id"]].items() if k != "_context"}
+        for t in tasks
+        if t["task_id"] in answers
+    ]
+    out.write_text(json.dumps({"system": system, "answers": ordered}, indent=2) + "\n")
     print(f"[letta] {SYSTEM_NAME}: answered {len(ordered)} tasks over {len(episodes)} episodes → {out}", flush=True)
 
 

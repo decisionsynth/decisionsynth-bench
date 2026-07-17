@@ -6,3 +6,4 @@ mem0ai==2.0.12
 faiss-cpu==1.14.3
 graphiti-core[google-genai]==0.29.2
 letta-client==1.12.1
+anthropic==0.117.0
