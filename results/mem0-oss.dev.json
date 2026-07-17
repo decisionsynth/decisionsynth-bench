@@ -1,0 +1,42 @@
+{
+  "system": "mem0-oss",
+  "k": 5,
+  "task_count": 1487,
+  "by_type": {
+    "direct_recall": {
+      "tasks": 591,
+      "precision_at_k": 0.09,
+      "recall_at_k": 0.448,
+      "exact_match_rate": 0.291
+    },
+    "precedent_search": {
+      "tasks": 11,
+      "precision_at_k": 0.582,
+      "recall_at_k": 0.515,
+      "exact_match_rate": 0.364
+    },
+    "rationale_lookup": {
+      "tasks": 112,
+      "precision_at_k": 0.086,
+      "recall_at_k": 0.429,
+      "exact_match_rate": 0.402
+    },
+    "rule_attribution": {
+      "tasks": 591,
+      "precision_at_k": 0.07,
+      "recall_at_k": 0.35,
+      "exact_match_rate": 0.311
+    },
+    "temporal_ordering": {
+      "tasks": 182,
+      "precision_at_k": 0.044,
+      "recall_at_k": 0.103,
+      "exact_match_rate": 0.401
+    }
+  },
+  "overall": {
+    "precision_at_k": 0.08,
+    "recall_at_k": 0.366,
+    "exact_match_rate": 0.321
+  }
+}

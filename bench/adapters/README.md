@@ -14,12 +14,24 @@ reaches `answer()`.
   systems compress, so the gap between a system's row and this row is what
   its pipeline lost.
 
-## Planned (maintainer-run vendor rows)
+## Vendor adapters (maintainer-run scoreboard rows)
 
-Adapters for **Mem0 OSS**, **Zep / Graphiti**, and **Letta** are planned as
-the first vendor scoreboard rows. Each requires that vendor's service and/or
-an LLM + embedding key, so they are configured via environment variables and
-are never part of the zero-key quickstart path.
+- `mem0_oss.py` — Mem0 OSS (`Memory`, `infer=True` fact extraction), FAISS
+  local vector store.
+- `zep_graphiti.py` — Graphiti temporal knowledge graph (the OSS engine
+  behind Zep), requires a Neo4j instance.
+- `letta_archival.py` — self-hosted Letta server, archival-passage memory.
+
+All three are Python (`pip install -r requirements.txt`, exact pins used for
+the published rows) and require `GEMINI_API_KEY` — every vendor runs on the
+same LLM/embedding stack (gemini-2.5-flash + gemini-embedding-001) to
+isolate the memory pipeline, per the configuration note in `../SCOREBOARD.md`.
+Each adapter renders episodes into identical plain-text decision memos,
+ingests them through the vendor's own pipeline, retrieves 25 items in the
+vendor's native unit per task, and generates typed answers from retrieved
+memory content only. They emit the same `{system, answers}` JSON the scorer
+consumes, so `bench/score.ts` remains the single scoring path. None of this
+is part of the zero-key quickstart.
 
 ## Contributing an adapter
 
