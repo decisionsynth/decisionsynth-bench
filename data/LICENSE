@@ -1,0 +1,17 @@
+The DecisionSynth dev-set corpus in this directory (episodes.json, qa.json,
+coverage.json) is licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0).
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Required attribution:
+  "DecisionSynth Bench dev set (decisionsynth-sample-dev-0.1),
+   https://github.com/decisionsynth/decisionsynth-bench, CC BY 4.0"
+
+The schema and benchmark harness in the rest of this repository are licensed
+separately under Apache-2.0 (see /LICENSE). The full DecisionSynth corpus and
+the private held-out test set are proprietary and are NOT covered by this
+license — see https://www.wealthschema.com.
+
+All data is synthetic. No real persons, households, accounts, or advisor
+decisions are represented.

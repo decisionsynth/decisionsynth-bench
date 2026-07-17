@@ -1,0 +1,48 @@
+# DecisionSynth Bench
+
+**Synthetic decision data for agent memory.** The first decision-relevant memory benchmark for financial services: can your memory system surface the *decisions* made about a client — not just chat transcripts — when an agent needs them?
+
+## Why this exists
+
+Existing memory benchmarks (LoCoMo, LongMemEval, BEAM) test passive conversational recall. Real agent memory failures are *decision-shaped*: "why did we take a 401(k) loan instead of a hardship withdrawal in March?", "which similar clients overrode this policy, and did it survive review?", "which regulatory figures governed that choice?". DecisionSynth Bench evaluates exactly that, over a corpus where every answer is **known by construction** — the deterministic generator that produced each episode also emitted its ground truth. No hand-authored answers, no LLM-generated labels.
+
+## What's in the box
+
+- `schema/decision-episode.schema.json` — the open episode + QA-task schema (Apache-2.0)
+- `data/` — the dev set (CC BY 4.0): ~590 decision episodes over 71 synthetic household archetypes, with QA answer keys
+- `bench/` — the evaluation harness: adapter contract, scoring script, and a deterministic lexical baseline that runs with **zero API keys**
+- `METHODOLOGY.md` — how the corpus is built, what is calibrated vs. authored, and the semantics you need before judging an episode "wrong"
+
+## Quickstart
+
+```bash
+# score the built-in lexical baseline on the dev set (no API keys required)
+npm install
+npm run baseline   # tsx bench/run-baseline.ts data/episodes.json data/qa.json out/baseline-answers.json
+npm run score      # tsx bench/score.ts data/qa.json out/baseline-answers.json --out out/scoreboard.json
+```
+
+To evaluate your own memory system, implement the adapter contract in `bench/types.ts`: ingest `episodes.json`, then answer each task in `qa.json` with `evidence_ids` (what you retrieved) and an `answer_key` (typed, per task type). Score with `bench/score.ts`.
+
+## Scoring
+
+Two axes per task, aggregated per task type:
+
+- **Evidence retrieval:** precision / recall @k over `evidence_ids`
+- **Answer correctness:** typed exact match against the ground-truth key (unordered set match for `precedent_search`, ordered match for `temporal_ordering`, field-wise match elsewhere)
+
+## The held-out scoreboard
+
+The published dev set ships with its answer keys so you can develop freely. The public scoreboard is run by the maintainers on a **held-out episode set over disjoint households** whose episodes and answers are never published — plausible imitation of the free sample cannot produce verified ground truth against households it has never seen. Fairness disputes are welcome: the harness is open, runs are reproducible from a fresh clone, and there is no pay-to-play.
+
+## Provenance & steward
+
+Episodes are generated deterministically (seeded PRNG, versioned generators, Zod-gated; same seed → byte-identical output) from the WealthSynth synthetic-household substrate: SCF-calibrated households, 96-month trajectories, NCHS/SSA/BLS-calibrated life-event hazards, and regulatory figures cited to IRS/Treasury primary sources. Advisor *behavior* (override rates, outcome splits) is **authored, not calibrated** — disclosed in full in `METHODOLOGY.md`, and benchmark scores do not depend on it.
+
+DecisionSynth Bench is stewarded by [WealthSchema](https://www.wealthschema.com), which sells the full corpus and custom decision batches. The benchmark itself is free, open, and vendor-neutral.
+
+## Licenses
+
+- Schema + harness: **Apache-2.0**
+- Dev-set corpus (`data/`): **CC BY 4.0**
+- Full corpus & held-out set: proprietary (see wealthschema.com)

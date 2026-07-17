@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://decisionsynth.com/schemas/decision-episode/0.1.0",
+  "title": "DecisionSynth Decision Episode (v0.1.0)",
+  "description": "A single synthetic decision episode: a deterministic projection of a household trajectory event through a policy engine, with cited semantic references and a seeded behavioral resolution. Published v0.1.0. Enums for decision_type are OPEN (extensible by design; wealth-sector values shipped in v0). All behavioral parameters that influenced 'resolution' are identified by behavior_params_version in _meta. outcome_params for need-driven decision types (D1/D2) carries the waterfall funding plan: amount (total funded), need, optional funding_gap, and per-source funded_<option> keys.",
+  "type": "object",
+  "required": [
+    "episode_id",
+    "schema_version",
+    "household_ref",
+    "month_index",
+    "decision_type",
+    "trigger",
+    "semantic_refs",
+    "procedural_path",
+    "resolution",
+    "_meta"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "episode_id": {
+      "type": "string",
+      "description": "Deterministic id: {decision_type_code}-{archetype_id}-seed-{seed}-m{month_index}[-{n}]",
+      "pattern": "^D[0-9]+-[A-Z]{1,3}-[0-9]{2}-seed-[0-9]+-m[0-9]{1,3}(-[0-9]+)?$"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "dsynth-0.1.0"
+    },
+    "household_ref": {
+      "type": "object",
+      "required": [
+        "archetype_id",
+        "seed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "archetype_id": {
+          "type": "string"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "golden_fixture": {
+          "type": "boolean"
+        },
+        "domain_versions_digest": {
+          "type": "string",
+          "description": "Hash of the household's _meta.domain_versions block, binding the episode to the exact generator versions that produced its household."
+        }
+      }
+    },
+    "month_index": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 96
+    },
+    "decision_type": {
+      "type": "string",
+      "description": "OPEN enum. v0 ships the three wealth-sector values; the schema deliberately permits sector extension (v1 candidate: insurance_coverage_gap_review).",
+      "examples": [
+        "emergency_liquidity_withdrawal",
+        "education_funding",
+        "retirement_contribution_or_roth_conversion"
+      ]
+    },
+    "trigger": {
+      "type": "object",
+      "required": [
+        "kind",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "life_event",
+            "stress_event",
+            "goal_state",
+            "scheduled_review"
+          ]
+        },
+        "event_type": {
+          "type": "string",
+          "description": "LifeEventType from the household's life_events schedule (must exist there \u2014 pure projection rule)."
+        },
+        "evidence": {
+          "type": "object",
+          "description": "Pointers into the canonical household JSON proving the trigger: trajectory month indices, life_event entries, goal ids, balance snapshots. Every value here must be re-derivable from the household record.",
+          "required": [
+            "trajectory_month"
+          ],
+          "properties": {
+            "trajectory_month": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 96
+            },
+            "life_event_ref": {
+              "type": "string"
+            },
+            "goal_id": {
+              "type": "string"
+            },
+            "derived_metrics": {
+              "type": "object",
+              "description": "Deterministically computed trigger metrics, e.g. emergency_fund_coverage_months.",
+              "additionalProperties": {
+                "type": [
+                  "number",
+                  "string",
+                  "boolean"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "semantic_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "description": "Dotted fact key from the WealthSchema Rule Sets feed (e.g. retirement.401k.elective_deferral.under_50). Must resolve against the feed vintage named in _meta.reference_feed."
+      }
+    },
+    "procedural_path": {
+      "type": "object",
+      "required": [
+        "policy",
+        "options_considered",
+        "recommended_option",
+        "steps_taken",
+        "terminal_step"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "type": "string",
+          "description": "Named firm policy applied, e.g. taxable_first_retirement_last."
+        },
+        "options_considered": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "option",
+              "permitted"
+            ],
+            "properties": {
+              "option": {
+                "type": "string"
+              },
+              "permitted": {
+                "type": "boolean"
+              },
+              "blocking_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Fact keys that rule the option out, when permitted=false."
+              }
+            }
+          }
+        },
+        "recommended_option": {
+          "type": "string"
+        },
+        "steps_taken": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "assess_situation",
+              "enumerate_options",
+              "recommend_per_policy",
+              "client_response",
+              "follow_policy",
+              "override_policy",
+              "supervisor_review",
+              "compliance_escalation",
+              "record_outcome"
+            ]
+          }
+        },
+        "terminal_step": {
+          "enum": [
+            "auto_approve",
+            "supervisor_review",
+            "compliance_escalation"
+          ]
+        }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "required": [
+        "followed_policy",
+        "outcome",
+        "outcome_status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "followed_policy": {
+          "type": "boolean"
+        },
+        "override_reason": {
+          "type": "string",
+          "description": "Required iff followed_policy=false. Value from the per-decision-type override enum (PHASE0-DESIGN.md \u00a73)."
+        },
+        "outcome": {
+          "type": "string",
+          "description": "Chosen option, e.g. approved_401k_loan."
+        },
+        "outcome_status": {
+          "enum": [
+            "approved",
+            "denied",
+            "escalated_then_approved",
+            "escalated_then_denied"
+          ]
+        },
+        "outcome_params": {
+          "type": "object",
+          "description": "Deterministic numeric details (amount, account_id) \u2014 each must reconcile with the household record.",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "string"
+            ]
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "followed_policy": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "followed_policy",
+          "outcome",
+          "outcome_status",
+          "override_reason"
+        ]
+      }
+    },
+    "lineage": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "episode_ids of prior episodes for the same household that this decision's context depends on (append-only; enables temporal_ordering QA tasks)."
+    },
+    "_meta": {
+      "type": "object",
+      "required": [
+        "domain_versions",
+        "behavior_params_version",
+        "reference_feed"
+      ],
+      "properties": {
+        "domain_versions": {
+          "type": "object",
+          "description": "Inherited from the household plus decisions: DECISIONS_VERSION.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "behavior_params_version": {
+          "type": "string",
+          "description": "BEHAVIOR_PARAMS_VERSION (the CMA-analog) \u2014 or 'custom:<digest>' for customer-dictated assumptions."
+        },
+        "reference_feed": {
+          "type": "object",
+          "required": [
+            "jurisdiction",
+            "tax_year",
+            "version"
+          ],
+          "properties": {
+            "jurisdiction": {
+              "type": "string"
+            },
+            "tax_year": {
+              "type": "integer"
+            },
+            "version": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "QaTask": {
+      "title": "DecisionSynth Bench QA task (emitted per episode at generation time)",
+      "type": "object",
+      "required": [
+        "task_id",
+        "task_type",
+        "question",
+        "answer_key",
+        "evidence_ids",
+        "distractor_ids"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string"
+        },
+        "task_type": {
+          "enum": [
+            "direct_recall",
+            "rationale_lookup",
+            "precedent_search",
+            "temporal_ordering",
+            "rule_attribution"
+          ]
+        },
+        "question": {
+          "type": "string"
+        },
+        "answer_key": {
+          "type": "object",
+          "description": "Typed ground truth (never free prose): outcome value, override_reason, episode-id set/list, or fact-key list, per task_type."
+        },
+        "evidence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "distractor_ids": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "string"
+          },
+          "description": "Same-archetype episodes that are plausible but wrong \u2014 retrieval must discriminate."
+        }
+      }
+    }
+  }
+}

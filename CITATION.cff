@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use DecisionSynth Bench in your research, please cite it as below."
+title: "DecisionSynth Bench: a decision-relevant memory benchmark for financial-services agents"
+type: dataset
+authors:
+  - name: "WealthSchema (Capstera)"
+    website: "https://www.wealthschema.com"
+repository-code: "https://github.com/decisionsynth/decisionsynth-bench"
+url: "https://decisionsynth.com"
+license: Apache-2.0
+version: 0.1.0
+date-released: 2026-07-17
+keywords:
+  - agent memory
+  - memory benchmark
+  - synthetic data
+  - financial services
+  - decision episodes
+abstract: >-
+  A benchmark evaluating whether agent memory systems can surface
+  decision-relevant context: 591 deterministic synthetic decision episodes
+  over 71 household archetypes with 1,487 known-answer-by-construction QA
+  tasks (direct recall, rationale lookup, precedent search, temporal
+  ordering, rule attribution), a dependency-free scoring harness, and a
+  maintainer-run scoreboard on a private held-out episode set.

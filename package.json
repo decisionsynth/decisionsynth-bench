@@ -1,0 +1,21 @@
+{
+  "name": "decisionsynth-bench",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DecisionSynth Bench — a decision-relevant memory benchmark for financial-services agents. Known-answer QA over deterministic synthetic decision episodes.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/decisionsynth/decisionsynth-bench"
+  },
+  "scripts": {
+    "baseline": "tsx bench/run-baseline.ts data/episodes.json data/qa.json out/baseline-answers.json",
+    "score": "tsx bench/score.ts data/qa.json out/baseline-answers.json --out out/scoreboard.json",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

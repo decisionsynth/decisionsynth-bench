@@ -1,0 +1,1120 @@
+{
+  "_meta": {
+    "dataset": "decisionsynth-sample-dev-0.1",
+    "license": "CC BY 4.0",
+    "schema_version": "dsynth-0.1.0",
+    "decisions_version": "v0.2.1",
+    "behavior_params_version": "v0.1.0",
+    "reference_feed": {
+      "jurisdiction": "us-federal",
+      "tax_year": 2026,
+      "version": "2026.1.0-preview"
+    },
+    "generated_at": "0000-00-00T00:00:00.000Z",
+    "seed_policy": "Sampling frame: corpus-snapshots/deterministic-corpus.json (archetype, seed, isStress) tuples. Dev walks seeds ascending over the first half per archetype; held-out walks descending over the remaining half. Early stop per archetype once >=3 seeds examined and every observed decision type has >=2 episodes.",
+    "note": "Public dev set — ships WITH answer keys."
+  },
+  "coverage": {
+    "A-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "episodes": 14,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 10,
+        "education_funding": 2,
+        "emergency_liquidity_withdrawal": 2
+      },
+      "coverage_met": true
+    },
+    "A-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "episodes": 8,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 2,
+        "retirement_contribution_or_roth_conversion": 4,
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "A-03": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "episodes": 11,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 7,
+        "education_funding": 2,
+        "emergency_liquidity_withdrawal": 2
+      },
+      "coverage_met": true
+    },
+    "A-04": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "episodes": 18,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 4,
+        "retirement_contribution_or_roth_conversion": 13,
+        "education_funding": 1
+      },
+      "coverage_met": false
+    },
+    "A-05": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "episodes": 8,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2,
+        "education_funding": 4,
+        "emergency_liquidity_withdrawal": 2
+      },
+      "coverage_met": true
+    },
+    "A-06": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "episodes": 22,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 2,
+        "retirement_contribution_or_roth_conversion": 17,
+        "education_funding": 3
+      },
+      "coverage_met": true
+    },
+    "AR-01": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 8,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 4,
+        "education_funding": 2,
+        "emergency_liquidity_withdrawal": 2
+      },
+      "coverage_met": true
+    },
+    "B-01": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 8,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 6,
+        "emergency_liquidity_withdrawal": 2
+      },
+      "coverage_met": true
+    },
+    "B-02": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 6,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 3,
+        "education_funding": 3
+      },
+      "coverage_met": true
+    },
+    "B-03": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "episodes": 9,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 2,
+        "education_funding": 3,
+        "retirement_contribution_or_roth_conversion": 4
+      },
+      "coverage_met": true
+    },
+    "BL-01": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 3,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 3
+      },
+      "coverage_met": true
+    },
+    "CR-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "episodes": 15,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 9,
+        "emergency_liquidity_withdrawal": 2,
+        "education_funding": 4
+      },
+      "coverage_met": true
+    },
+    "E-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "episodes": 11,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 2,
+        "retirement_contribution_or_roth_conversion": 7,
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "E-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "episodes": 7,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 5,
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "E-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 7,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 3,
+        "retirement_contribution_or_roth_conversion": 4
+      },
+      "coverage_met": true
+    },
+    "ES-01": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 0,
+      "by_type": {},
+      "coverage_met": true
+    },
+    "F-01": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 8,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 3,
+        "retirement_contribution_or_roth_conversion": 5
+      },
+      "coverage_met": true
+    },
+    "F-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "episodes": 9,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 2,
+        "retirement_contribution_or_roth_conversion": 7
+      },
+      "coverage_met": true
+    },
+    "F-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 6,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 2,
+        "retirement_contribution_or_roth_conversion": 4
+      },
+      "coverage_met": true
+    },
+    "F-04": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "episodes": 6,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 4,
+        "emergency_liquidity_withdrawal": 2
+      },
+      "coverage_met": true
+    },
+    "F-05": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "episodes": 12,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 10,
+        "emergency_liquidity_withdrawal": 2
+      },
+      "coverage_met": true
+    },
+    "F-06": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "episodes": 18,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 2,
+        "retirement_contribution_or_roth_conversion": 16
+      },
+      "coverage_met": true
+    },
+    "H-01": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 4,
+      "by_type": {
+        "education_funding": 2,
+        "retirement_contribution_or_roth_conversion": 2
+      },
+      "coverage_met": true
+    },
+    "H-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "episodes": 19,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 11,
+        "emergency_liquidity_withdrawal": 1,
+        "education_funding": 7
+      },
+      "coverage_met": false
+    },
+    "H-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 4,
+      "by_type": {
+        "education_funding": 4
+      },
+      "coverage_met": true
+    },
+    "H-04": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 0,
+      "by_type": {},
+      "coverage_met": true
+    },
+    "HC-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "episodes": 6,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 3,
+        "emergency_liquidity_withdrawal": 1,
+        "education_funding": 2
+      },
+      "coverage_met": false
+    },
+    "HC-02": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 3,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 3
+      },
+      "coverage_met": true
+    },
+    "HC-03": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "episodes": 10,
+      "by_type": {
+        "education_funding": 1,
+        "retirement_contribution_or_roth_conversion": 9
+      },
+      "coverage_met": false
+    },
+    "MB-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "episodes": 19,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 17,
+        "education_funding": 1,
+        "emergency_liquidity_withdrawal": 1
+      },
+      "coverage_met": false
+    },
+    "MB-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "episodes": 16,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 11,
+        "emergency_liquidity_withdrawal": 1,
+        "education_funding": 4
+      },
+      "coverage_met": false
+    },
+    "MB-03": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "episodes": 9,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 5,
+        "emergency_liquidity_withdrawal": 1,
+        "education_funding": 3
+      },
+      "coverage_met": false
+    },
+    "MV-02": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 7,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 5,
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "MV-03": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "episodes": 7,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 4,
+        "education_funding": 2,
+        "emergency_liquidity_withdrawal": 1
+      },
+      "coverage_met": false
+    },
+    "N-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "episodes": 8,
+      "by_type": {
+        "education_funding": 3,
+        "retirement_contribution_or_roth_conversion": 5
+      },
+      "coverage_met": true
+    },
+    "N-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "episodes": 7,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 5,
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "N-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 4,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 4
+      },
+      "coverage_met": true
+    },
+    "N-04": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 9,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 2,
+        "retirement_contribution_or_roth_conversion": 7
+      },
+      "coverage_met": true
+    },
+    "P-01": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 6,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 4,
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "P-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "episodes": 2,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2
+      },
+      "coverage_met": true
+    },
+    "P-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 8,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 8
+      },
+      "coverage_met": true
+    },
+    "P-04": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "episodes": 25,
+      "by_type": {
+        "education_funding": 8,
+        "emergency_liquidity_withdrawal": 1,
+        "retirement_contribution_or_roth_conversion": 16
+      },
+      "coverage_met": false
+    },
+    "P-05": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 7,
+      "by_type": {
+        "education_funding": 3,
+        "retirement_contribution_or_roth_conversion": 4
+      },
+      "coverage_met": true
+    },
+    "P-06": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 8,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 5,
+        "education_funding": 3
+      },
+      "coverage_met": true
+    },
+    "R-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "episodes": 8,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 1,
+        "education_funding": 4,
+        "retirement_contribution_or_roth_conversion": 3
+      },
+      "coverage_met": false
+    },
+    "R-02": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 2,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2
+      },
+      "coverage_met": true
+    },
+    "R-03": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "episodes": 4,
+      "by_type": {
+        "education_funding": 2,
+        "retirement_contribution_or_roth_conversion": 2
+      },
+      "coverage_met": true
+    },
+    "RE-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "episodes": 4,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2,
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "RE-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "episodes": 8,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 6,
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "RE-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 0,
+      "by_type": {},
+      "coverage_met": true
+    },
+    "RI-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "episodes": 8,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2,
+        "education_funding": 4,
+        "emergency_liquidity_withdrawal": 2
+      },
+      "coverage_met": true
+    },
+    "RI-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "episodes": 4,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 1,
+        "education_funding": 3
+      },
+      "coverage_met": false
+    },
+    "RL-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "episodes": 2,
+      "by_type": {
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "RL-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "episodes": 2,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2
+      },
+      "coverage_met": true
+    },
+    "S-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "episodes": 14,
+      "by_type": {
+        "education_funding": 1,
+        "emergency_liquidity_withdrawal": 2,
+        "retirement_contribution_or_roth_conversion": 11
+      },
+      "coverage_met": false
+    },
+    "S-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "episodes": 14,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 12,
+        "emergency_liquidity_withdrawal": 1,
+        "education_funding": 1
+      },
+      "coverage_met": false
+    },
+    "S-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 5,
+      "by_type": {
+        "education_funding": 3,
+        "retirement_contribution_or_roth_conversion": 2
+      },
+      "coverage_met": true
+    },
+    "S-04": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 2,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2
+      },
+      "coverage_met": true
+    },
+    "SB-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "episodes": 11,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 1,
+        "retirement_contribution_or_roth_conversion": 7,
+        "education_funding": 3
+      },
+      "coverage_met": false
+    },
+    "SB-02": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 5,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2,
+        "education_funding": 3
+      },
+      "coverage_met": true
+    },
+    "SB-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 6,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 4,
+        "education_funding": 2
+      },
+      "coverage_met": true
+    },
+    "SL-01": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 2,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2
+      },
+      "coverage_met": true
+    },
+    "SL-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "episodes": 6,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 1,
+        "retirement_contribution_or_roth_conversion": 4,
+        "education_funding": 1
+      },
+      "coverage_met": false
+    },
+    "SL-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 2,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 2
+      },
+      "coverage_met": true
+    },
+    "U-01": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 9,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 3,
+        "retirement_contribution_or_roth_conversion": 6
+      },
+      "coverage_met": true
+    },
+    "U-02": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 4,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 4
+      },
+      "coverage_met": true
+    },
+    "U-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 7,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 5,
+        "emergency_liquidity_withdrawal": 2
+      },
+      "coverage_met": true
+    },
+    "X-01": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "episodes": 22,
+      "by_type": {
+        "emergency_liquidity_withdrawal": 1,
+        "retirement_contribution_or_roth_conversion": 16,
+        "education_funding": 5
+      },
+      "coverage_met": false
+    },
+    "X-02": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "episodes": 21,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 20,
+        "emergency_liquidity_withdrawal": 1
+      },
+      "coverage_met": false
+    },
+    "X-03": {
+      "seeds_used": [
+        1,
+        2,
+        3
+      ],
+      "episodes": 6,
+      "by_type": {
+        "education_funding": 3,
+        "retirement_contribution_or_roth_conversion": 3
+      },
+      "coverage_met": true
+    },
+    "X-04": {
+      "seeds_used": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "episodes": 11,
+      "by_type": {
+        "retirement_contribution_or_roth_conversion": 10,
+        "emergency_liquidity_withdrawal": 1
+      },
+      "coverage_met": false
+    }
+  }
+}
