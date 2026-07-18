@@ -1,0 +1,42 @@
+{
+  "system": "zep-graphiti",
+  "k": 5,
+  "task_count": 1367,
+  "by_type": {
+    "direct_recall": {
+      "tasks": 543,
+      "precision_at_k": 0.135,
+      "recall_at_k": 0.674,
+      "exact_match_rate": 0.11
+    },
+    "precedent_search": {
+      "tasks": 9,
+      "precision_at_k": 0.556,
+      "recall_at_k": 0.536,
+      "exact_match_rate": 0
+    },
+    "rationale_lookup": {
+      "tasks": 105,
+      "precision_at_k": 0.078,
+      "recall_at_k": 0.39,
+      "exact_match_rate": 0
+    },
+    "rule_attribution": {
+      "tasks": 543,
+      "precision_at_k": 0.178,
+      "recall_at_k": 0.888,
+      "exact_match_rate": 0.158
+    },
+    "temporal_ordering": {
+      "tasks": 167,
+      "precision_at_k": 0.234,
+      "recall_at_k": 0.537,
+      "exact_match_rate": 0.886
+    }
+  },
+  "overall": {
+    "precision_at_k": 0.162,
+    "recall_at_k": 0.719,
+    "exact_match_rate": 0.215
+  }
+}

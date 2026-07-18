@@ -39,10 +39,10 @@ The published dev set ships with its answer keys so you can develop freely. The 
 
 Episodes are generated deterministically (seeded PRNG, versioned generators, Zod-gated; same seed → byte-identical output) from the WealthSynth synthetic-household substrate: SCF-calibrated households, 96-month trajectories, NCHS/SSA/BLS-calibrated life-event hazards, and regulatory figures cited to IRS/Treasury primary sources. Advisor *behavior* (override rates, outcome splits) is **authored, not calibrated** — disclosed in full in `METHODOLOGY.md`, and benchmark scores do not depend on it.
 
-DecisionSynth Bench is stewarded by [WealthSchema](https://www.wealthschema.com), which sells the full corpus and custom decision batches. The benchmark itself is free, open, and vendor-neutral.
+DecisionSynth Bench is stewarded by [WealthSchema](https://www.wealthschema.com/?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench), which sells the full corpus and custom decision batches. The benchmark itself is free, open, and vendor-neutral. The regulatory figures episodes cite via `semantic_refs` are served live (with primary-source citations) by the [WealthSchema Rule Sets feed](https://www.wealthschema.com/rule-sets?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench); a free synthetic-household sample is at [wealthschema.com/sample](https://www.wealthschema.com/sample?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench).
 
 ## Licenses
 
 - Schema + harness: **Apache-2.0**
 - Dev-set corpus (`data/`): **CC BY 4.0**
-- Full corpus & held-out set: proprietary (see wealthschema.com)
+- Full corpus & held-out set: proprietary (see [wealthschema.com/datasets](https://www.wealthschema.com/datasets?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench))
