@@ -1,0 +1,39 @@
+name: Benchmark fairness dispute
+description: "Dispute a scoreboard row: configuration, prompt rendering, retrieval budget, or scoring. Disputes are resolved by rerunning, not arguing."
+title: "[dispute] "
+labels: ["fairness-dispute"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every row's exact configuration is in `bench/SCOREBOARD.md` and the adapter file headers.
+        Disputes that name a specific configuration and a specific change get rerun; general
+        disagreement with a result does not.
+  - type: input
+    id: row
+    attributes:
+      label: Which scoreboard row?
+      placeholder: "e.g. mem0-oss (claude), held-out 2026-07-18"
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: What specifically is unfair or wrong?
+      description: Point at the configuration line, code path, or scoring rule you dispute.
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: What would you change, concretely?
+      description: The adapter/config diff (or description of one) you believe produces a fair run.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / reproduction
+      description: Commands, output, or a fork branch demonstrating the issue. The harness runs from a fresh clone with no API keys for the baseline.
+    validations:
+      required: false

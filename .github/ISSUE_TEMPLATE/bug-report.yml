@@ -1,0 +1,30 @@
+name: Bug report
+description: Harness bugs, schema issues, or scoring that contradicts the documented semantics.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing a "wrong answer key" bug: read METHODOLOGY.md §3 (decision semantics) —
+        the engine's conventions are deliberate and disclosed, and most apparent key errors
+        are that section in action.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect, and which documented rule says so?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Commands from a fresh clone. Node version if the harness misbehaves.
+    validations:
+      required: true

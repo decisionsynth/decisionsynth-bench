@@ -2,6 +2,29 @@
 
 **Synthetic decision data for agent memory.** The first decision-relevant memory benchmark for financial services: can your memory system surface the *decisions* made about a client — not just chat transcripts — when an agent needs them?
 
+[![Harness: Apache-2.0](https://img.shields.io/badge/harness-Apache--2.0-blue)](LICENSE)
+[![Dev set: CC BY 4.0](https://img.shields.io/badge/dev%20set-CC%20BY%204.0-green)](data/)
+[![Dev set](https://img.shields.io/badge/episodes-591%20dev%20%2B%20543%20held--out-8a2be2)](bench/SCOREBOARD.md)
+
+**Held-out scoreboard** (private episode set, disjoint households, maintainer-run — [full scoreboard + configuration](bench/SCOREBOARD.md)):
+
+| System (creator) | Overall EM | R@5 |
+|---|---|---|
+| naive-lexical-baseline (verbatim storage, ceiling ref) | **0.980** | 0.994 |
+| letta-archival (gemini / claude) | 0.922 / 0.917 | 0.821 |
+| mem0-oss (gemini / claude) | 0.465 / 0.136 | 0.439 / 0.781 |
+| zep-graphiti (gemini / claude) | 0.215 / 0.091 | 0.719 / 0.475 |
+
+The baseline stores everything verbatim and greps it — the gap between a vendor row and that row is **what the memory pipeline lost**. Both creator-model variants are published because the swing between them is itself a finding.
+
+**Run it in two commands** (no API keys):
+
+```bash
+npm install && npm run baseline && npm run score
+```
+
+More: [Methodology](METHODOLOGY.md) · [Scoreboard](bench/SCOREBOARD.md) · [Buy the full corpus](https://www.wealthschema.com/decisionsynth?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench) · [Data sheet (PDF)](https://www.wealthschema.com/decisionsynth/data-sheet?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench) · [decisionsynth.com](https://decisionsynth.com)
+
 ## Why this exists
 
 Existing memory benchmarks (LoCoMo, LongMemEval, BEAM) test passive conversational recall. Real agent memory failures are *decision-shaped*: "why did we take a 401(k) loan instead of a hardship withdrawal in March?", "which similar clients overrode this policy, and did it survive review?", "which regulatory figures governed that choice?". DecisionSynth Bench evaluates exactly that, over a corpus where every answer is **known by construction** — the deterministic generator that produced each episode also emitted its ground truth. No hand-authored answers, no LLM-generated labels.

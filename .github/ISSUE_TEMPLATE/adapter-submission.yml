@@ -1,0 +1,33 @@
+name: Adapter submission
+description: Propose a new memory-system adapter for the scoreboard. Read bench/adapters/README.md first — it is the contract of record.
+title: "[adapter] "
+labels: ["adapter"]
+body:
+  - type: input
+    id: system
+    attributes:
+      label: Memory system
+      placeholder: "Name + version/commit of the system the adapter drives"
+    validations:
+      required: true
+  - type: textarea
+    id: conformance
+    attributes:
+      label: Contract conformance
+      description: Confirm the adapter renders the identical plain-text memos, uses the shared model stack (or explain the deviation), honors the 25-item retrieval budget in the system's native unit, and never sees ground truth.
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Dev-set run
+      description: Your out/scoreboard.json aggregate numbers and the exact commands to reproduce. Maintainers rerun before publishing any row.
+    validations:
+      required: true
+  - type: input
+    id: pr
+    attributes:
+      label: Pull request
+      placeholder: "Link to the PR with the adapter + pins"
+    validations:
+      required: false
