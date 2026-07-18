@@ -1,0 +1,42 @@
+{
+  "system": "letta-archival",
+  "k": 5,
+  "task_count": 1367,
+  "by_type": {
+    "direct_recall": {
+      "tasks": 543,
+      "precision_at_k": 0.178,
+      "recall_at_k": 0.891,
+      "exact_match_rate": 0.947
+    },
+    "precedent_search": {
+      "tasks": 9,
+      "precision_at_k": 0.711,
+      "recall_at_k": 0.577,
+      "exact_match_rate": 0.667
+    },
+    "rationale_lookup": {
+      "tasks": 105,
+      "precision_at_k": 0.152,
+      "recall_at_k": 0.762,
+      "exact_match_rate": 0.905
+    },
+    "rule_attribution": {
+      "tasks": 543,
+      "precision_at_k": 0.176,
+      "recall_at_k": 0.88,
+      "exact_match_rate": 0.956
+    },
+    "temporal_ordering": {
+      "tasks": 167,
+      "precision_at_k": 0.195,
+      "recall_at_k": 0.446,
+      "exact_match_rate": 0.76
+    }
+  },
+  "overall": {
+    "precision_at_k": 0.181,
+    "recall_at_k": 0.821,
+    "exact_match_rate": 0.922
+  }
+}

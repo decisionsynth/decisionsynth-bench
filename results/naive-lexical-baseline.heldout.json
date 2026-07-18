@@ -1,0 +1,42 @@
+{
+  "system": "naive-lexical-baseline",
+  "k": 5,
+  "task_count": 1367,
+  "by_type": {
+    "direct_recall": {
+      "tasks": 543,
+      "precision_at_k": 0.199,
+      "recall_at_k": 0.996,
+      "exact_match_rate": 0.978
+    },
+    "precedent_search": {
+      "tasks": 9,
+      "precision_at_k": 1,
+      "recall_at_k": 0.733,
+      "exact_match_rate": 1
+    },
+    "rationale_lookup": {
+      "tasks": 105,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1,
+      "exact_match_rate": 0.971
+    },
+    "rule_attribution": {
+      "tasks": 543,
+      "precision_at_k": 0.199,
+      "recall_at_k": 0.996,
+      "exact_match_rate": 0.982
+    },
+    "temporal_ordering": {
+      "tasks": 167,
+      "precision_at_k": 0.997,
+      "recall_at_k": 0.987,
+      "exact_match_rate": 0.982
+    }
+  },
+  "overall": {
+    "precision_at_k": 0.302,
+    "recall_at_k": 0.994,
+    "exact_match_rate": 0.98
+  }
+}

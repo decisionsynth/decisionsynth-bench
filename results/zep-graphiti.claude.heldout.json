@@ -1,0 +1,42 @@
+{
+  "system": "zep-graphiti@claude-haiku-4-5-20251001",
+  "k": 5,
+  "task_count": 1367,
+  "by_type": {
+    "direct_recall": {
+      "tasks": 543,
+      "precision_at_k": 0.088,
+      "recall_at_k": 0.438,
+      "exact_match_rate": 0.083
+    },
+    "precedent_search": {
+      "tasks": 9,
+      "precision_at_k": 0.133,
+      "recall_at_k": 0.114,
+      "exact_match_rate": 0
+    },
+    "rationale_lookup": {
+      "tasks": 105,
+      "precision_at_k": 0.088,
+      "recall_at_k": 0.438,
+      "exact_match_rate": 0
+    },
+    "rule_attribution": {
+      "tasks": 543,
+      "precision_at_k": 0.111,
+      "recall_at_k": 0.554,
+      "exact_match_rate": 0.028
+    },
+    "temporal_ordering": {
+      "tasks": 167,
+      "precision_at_k": 0.164,
+      "recall_at_k": 0.378,
+      "exact_match_rate": 0.389
+    }
+  },
+  "overall": {
+    "precision_at_k": 0.107,
+    "recall_at_k": 0.475,
+    "exact_match_rate": 0.091
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "system": "mem0-oss@claude-haiku-4-5-20251001",
+  "k": 5,
+  "task_count": 1487,
+  "by_type": {
+    "direct_recall": {
+      "tasks": 591,
+      "precision_at_k": 0.123,
+      "recall_at_k": 0.616,
+      "exact_match_rate": 0.633
+    },
+    "precedent_search": {
+      "tasks": 11,
+      "precision_at_k": 0.6,
+      "recall_at_k": 0.56,
+      "exact_match_rate": 0.364
+    },
+    "rationale_lookup": {
+      "tasks": 112,
+      "precision_at_k": 0.127,
+      "recall_at_k": 0.634,
+      "exact_match_rate": 0.054
+    },
+    "rule_attribution": {
+      "tasks": 591,
+      "precision_at_k": 0.123,
+      "recall_at_k": 0.614,
+      "exact_match_rate": 0
+    },
+    "temporal_ordering": {
+      "tasks": 182,
+      "precision_at_k": 0.156,
+      "recall_at_k": 0.339,
+      "exact_match_rate": 0.28
+    }
+  },
+  "overall": {
+    "precision_at_k": 0.131,
+    "recall_at_k": 0.582,
+    "exact_match_rate": 0.293
+  }
+}
