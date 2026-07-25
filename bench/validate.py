@@ -52,8 +52,22 @@ The system's proposed answer (JSON):
 
 Judge ONLY whether the proposed answer is supported by the retrieved memory content above —
 i.e., a careful reader of that content would produce the same answer values. Judge support,
-not real-world truth; you have no access to the underlying records. If the content does not
-contain the information and the system guessed, that is unsupported. Reply with JSON:
+not real-world truth; you have no access to the underlying records.
+
+The proposed answer may contain "no answer" values for fields the system could not determine —
+null, an empty list, or placeholder text such as "unknown" or "NOT_FOUND". Treat a "no answer"
+value as SUPPORTED whenever the retrieved content above genuinely does not contain that specific
+piece of information: a careful reader given only this content would reach the same "not found"
+conclusion, so reporting it honestly is a pass, not a failure. Reserve UNSUPPORTED for a field
+where the system instead filled in a concrete, specific value — a name, amount, status,
+identifier, etc. — that the retrieved content does not state or contradicts. That is the guessing
+case this check exists to catch.
+
+If the answer mixes both — some fields correctly grounded or honestly left as "no answer", and
+one concrete value not backed by the content — mark the whole answer unsupported and name the
+offending field in "reason".
+
+Reply with JSON:
 {{"supported": true/false, "reason": "<one short sentence>"}}"""
 
 

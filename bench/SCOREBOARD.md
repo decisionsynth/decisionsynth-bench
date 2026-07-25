@@ -22,20 +22,25 @@ The **naive lexical baseline stores every episode verbatim and greps it**. For a
 
 Vendor pipelines embed an LLM, so a scoreboard row is really *pipeline × extraction model*. Each configuration therefore runs twice — once with Gemini (`gemini-2.5-flash`) and once with Anthropic Claude (`claude-haiku-4-5`) as the creating model (vendor extraction where applicable + answer generation; embeddings are `gemini-embedding-001` in all rows) — and each family's answers are audited by the **other** family against the same retrieved context (`bench/validate.py`; the validator never sees ground truth). Dev set, k=5:
 
+> **Correction (2026-07-25).** An audit of the validator found its original prompt scored honest no-answer values (`null`, `[]`, `"unknown"`, `"NOT_FOUND"`) as unsupported — the same as fabrications — inflating disagreement rates for any system whose retrieval gaps produce honest "not found" answers. `bench/validate.py` now explicitly treats an honest no-answer as SUPPORTED when the retrieved content genuinely lacks the information, reserving UNSUPPORTED for concrete values the content doesn't back. The six Claude-created / Gemini-validated reports were re-judged in full against the fixed prompt (their answers and retrieved contexts were archived); corrected rates appear below. The six Gemini-created / Claude-validated rates were produced under the pre-fix prompt and **cannot be re-judged** — the retrieved context Gemini saw was not archived — so they are **withdrawn** (†) until a fresh creation run reproduces them.
+
 | System (creator) | Overall EM | R@5 | Cross-validator disagreement |
 |---|---|---|---|
-| letta-archival (gemini) | 0.892 | 0.765 | 0.165 (claude) |
-| letta-archival (claude) | 0.884 | 0.765 | 0.130 (gemini) |
-| mem0-oss (gemini) | 0.321 | 0.366 | 0.452 (claude) |
-| mem0-oss (claude) | 0.293 | 0.582 | 0.553 (gemini) |
-| zep-graphiti (gemini) | 0.128 | 0.737 | 0.578 (claude) |
-| zep-graphiti (claude) | 0.069 | 0.425 | 0.895 (gemini) |
+| letta-archival (gemini) | 0.892 | 0.765 | withdrawn† |
+| letta-archival (claude) | 0.884 | 0.765 | 0.089 (gemini) |
+| mem0-oss (gemini) | 0.321 | 0.366 | withdrawn† |
+| mem0-oss (claude) | 0.293 | 0.582 | 0.221 (gemini) |
+| zep-graphiti (gemini) | 0.128 | 0.737 | withdrawn† |
+| zep-graphiti (claude) | 0.069 | 0.425 | 0.147 (gemini)‡ |
+
+† Pre-fix Claude-validated rate withdrawn per the 2026-07-25 correction above (previously published: letta 0.165, mem0 0.452, zep-graphiti 0.578).
+‡ zep-graphiti's `rationale_lookup` slice (112 tasks) still exhibits the pre-fix failure mode for multi-field, mostly-null answers (0.839 disagreement post-fix; spot-checks found correctly grounded answers still flagged). Its other four task types sit at 0.066–0.121 — treat the overall rate as an upper bound until the validator prompt judges multi-field answers field-by-field.
 
 Three findings the two-creator design surfaces:
 
 1. **Verbatim storage is creator-invariant; extraction is not.** Letta's rows barely move across creators (EM 0.892 vs 0.884) because nothing is extracted. The extraction pipelines swing hard — and in *opposite directions per architecture*.
 2. **The same model family loses different things in different pipelines.** Under mem0, Claude extraction preserves episode identity far better (R@5 0.582 vs 0.366) but discards field detail — dotted reference citations vanish entirely (attribution EM 0.000; the retrieved memories contain no `semantic_refs` strings at all). Under Graphiti, Claude-haiku extracts ~2.8 edge facts per episode where gemini-flash extracts ~18, starving the graph (R@5 0.425 vs 0.737; temporal EM 0.198 vs 0.786).
-3. **The cross-validator tracks answer quality without ever seeing ground truth.** Disagreement rates order the rows the same way EM does (letta ≈ 0.13–0.17, mem0 ≈ 0.45–0.55, graphiti-claude 0.90), so `validate.py` is usable as an unsupervised health signal on corpora where answer keys are withheld.
+3. **The cross-validator measures fabrication, not completeness** *(restated 2026-07-25 — the original claim that disagreement orders rows the same way EM does was an artifact of the pre-fix prompt penalizing honest no-answers)*. Under the fixed prompt the two metrics separate: zep-graphiti (claude) has the lowest EM (0.069) yet mid-pack disagreement (0.147) because most of its missed answers are honest nulls from sparse retrieval — correctly scored as grounded — while mem0's extraction pipeline posts the highest corrected disagreement (0.221): concrete values its own retrieved memories don't back. Read EM as *how much structure survived* and disagreement as *how much was made up*; they are complementary signals, and `validate.py` remains usable as an unsupervised fabrication check on corpora where answer keys are withheld.
 
 Full validation reports (per-task disagreement reasons) accompany the maintainer archives.
 
@@ -46,12 +51,14 @@ Full validation reports (per-task disagreement reasons) accompany the maintainer
 | System (creator) | Overall EM | P@5 | R@5 | recall EM | rationale EM | precedent EM | temporal EM | attribution EM | Cross-validator disagreement |
 |---|---|---|---|---|---|---|---|---|---|
 | naive-lexical-baseline (deterministic, no LLM) | 0.980 | 0.302 | 0.994 | 0.978 | 0.971 | 1.000 | 0.982 | 0.982 | — |
-| letta-archival (gemini) | 0.922 | 0.181 | 0.821 | 0.947 | 0.905 | 0.667 | 0.760 | 0.956 | 0.129 (claude) |
-| letta-archival (claude) | 0.917 | 0.181 | 0.821 | 0.947 | 0.905 | 0.667 | 0.719 | 0.956 | 0.087 (gemini) |
-| mem0-oss (gemini) | 0.465 | 0.095 | 0.439 | 0.527 | 0.038 | 0.333 | 0.521 | 0.470 | 0.386 (claude) |
-| mem0-oss (claude) | 0.136 | 0.167 | 0.781 | 0.238 | 0.010 | 0.222 | 0.323 | 0.000 | 0.492 (gemini) |
-| zep-graphiti (gemini) | 0.215 | 0.162 | 0.719 | 0.110 | 0.000 | 0.000 | 0.886 | 0.158 | 0.561 (claude) |
-| zep-graphiti (claude) | 0.091 | 0.107 | 0.475 | 0.083 | 0.000 | 0.000 | 0.389 | 0.028 | 0.908 (gemini) |
+| letta-archival (gemini) | 0.922 | 0.181 | 0.821 | 0.947 | 0.905 | 0.667 | 0.760 | 0.956 | withdrawn† |
+| letta-archival (claude) | 0.917 | 0.181 | 0.821 | 0.947 | 0.905 | 0.667 | 0.719 | 0.956 | 0.053 (gemini) |
+| mem0-oss (gemini) | 0.465 | 0.095 | 0.439 | 0.527 | 0.038 | 0.333 | 0.521 | 0.470 | withdrawn† |
+| mem0-oss (claude) | 0.136 | 0.167 | 0.781 | 0.238 | 0.010 | 0.222 | 0.323 | 0.000 | 0.202 (gemini) |
+| zep-graphiti (gemini) | 0.215 | 0.162 | 0.719 | 0.110 | 0.000 | 0.000 | 0.886 | 0.158 | withdrawn† |
+| zep-graphiti (claude) | 0.091 | 0.107 | 0.475 | 0.083 | 0.000 | 0.000 | 0.389 | 0.028 | 0.197 (gemini)‡ |
+
+† ‡ Same correction as the dev-set section above (2026-07-25): Gemini-validated rates are re-judged under the fixed prompt (previously published: letta 0.087, mem0 0.492, zep-graphiti 0.908); Claude-validated rates are withdrawn pending a fresh creation run (previously: letta 0.129, mem0 0.386, zep-graphiti 0.561); zep-graphiti's `rationale_lookup` slice (0.648 post-fix, other types 0.081–0.223) keeps its overall rate an upper bound.
 
 Held-out reading notes:
 
@@ -59,7 +66,7 @@ Held-out reading notes:
 - **Extraction quality varies corpus-to-corpus.** mem0 (gemini) rationale EM collapsed from 0.402 (dev) to 0.038 (held-out) while its overall EM *rose* (0.321 → 0.465): the same pipeline preserves different structure on different data. Single-corpus memory evals overfit their corpus.
 - **zep-graphiti posts the best temporal_ordering of any LLM-backed system (0.886)** — above its own dev number and beating verbatim-storage letta (0.760) — while still losing exact identifiers to edge-fact granularity (recall EM 0.110). Same architecture, opposite extremes, one benchmark run.
 - `precedent_search` has only 9 held-out tasks (rarest trigger type in the coverage frame) — treat that column as directional, not significant.
-- Letta's two creator rows share identical retrieval (R@5 0.821 — same embeddings, verbatim passages); the small EM gap is answer generation alone. The cross-validator's lowest disagreement (0.087) lands on the same rows EM ranks highest — ground-truth-free validation continues to track quality on the corpus where answer keys are withheld.
+- Letta's two creator rows share identical retrieval (R@5 0.821 — same embeddings, verbatim passages); the small EM gap is answer generation alone. The cross-validator's lowest corrected disagreement (0.053) lands on the rows EM ranks highest — consistent with verbatim storage leaving the least room for fabrication (see the restated finding 3 above: low disagreement means low fabrication, not high completeness).
 
 **Reading the vendor rows:** letta-archival stores memos verbatim (its archival path does no extraction), so its row sits near the baseline ceiling and mostly measures retrieval quality (R@5 0.765 vs 0.972). mem0-oss runs its fact-extraction pipeline (`infer=True`), and the gap — overall EM 0.321 vs 0.950 — is decision-relevant structure the extraction discarded: exact outcome identifiers, full `semantic_refs` lists, and episode identity needed for multi-episode tasks. zep-graphiti is the most instructive split: its *episode-level* retrieval is strong (R@5 0.737) and it posts the **best temporal_ordering EM of any system (0.786** vs the baseline's 0.907) — the temporal graph doing exactly what it is designed for — but its retrieval unit is the individual *edge fact*, and one decision memo shreds into ~25 facts. At the matched retrieval budget (25 items) the anchor decision's outcome/status facts are usually crowded out, so exact-identifier answers fail (recall EM 0.036) even when the graph provably contains the fact. Some `outcome_status` edges were also dropped at extraction (entity-resolution failures during bulk ingest). Granularity of the retrieval unit — passages vs facts vs edges — is a first-order variable this benchmark surfaces; all rows use the same 25-item budget in each system's native unit.
 
