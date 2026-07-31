@@ -64,6 +64,10 @@ Episodes are generated deterministically (seeded PRNG, versioned generators, Zod
 
 DecisionSynth Bench is stewarded by [WealthSchema](https://www.wealthschema.com/?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench), which sells the full corpus and custom decision batches. The benchmark itself is free, open, and vendor-neutral. The regulatory figures episodes cite via `semantic_refs` are served live (with primary-source citations) by the [WealthSchema Rule Sets feed](https://www.wealthschema.com/rule-sets?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench); a free synthetic-household sample is at [wealthschema.com/sample](https://www.wealthschema.com/sample?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench).
 
+## Related benchmark
+
+[**Planning Benchmark**](https://github.com/decisionsynth/planning-benchmark) — from the same team, over the same synthetic substrate: can an AI financial-advice system cite *this year's* regulatory figures? 50 open tasks with forbidden-figure answer keys and a mechanical **Stale Figure Rate** scorer. Where this benchmark tests what an agent *remembers*, that one tests whether its figures are *current*. Scoreboard: [wealthschema.com/benchmark](https://www.wealthschema.com/benchmark?utm_source=github&utm_medium=referral&utm_campaign=decisionsynth-bench).
+
 ## Licenses
 
 - Schema + harness: **Apache-2.0**
