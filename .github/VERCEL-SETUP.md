@@ -5,7 +5,7 @@
 > `www.decisionsynth.com`. These notes live in `.github/` (not `docs/`) so the
 > deployed site never serves them.
 
-The one-pager lives in this folder (`docs/index.html`). **Owner decision
+The one-pager lives in `docs/index.html`. **Owner decision
 2026-07-18: host on Vercel** (supersedes decision 11.4's GitHub Pages choice).
 Rationale: Vercel deploys from this repo while it is still **private**, so
 decisionsynth.com can go live *before* the launch-day repo flip; it matches
