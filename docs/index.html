@@ -3,18 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DecisionSynth — decision memory data for AI agents</title>
-<meta name="description" content="Deterministic advisor-decision episodes over synthetic households, with known-answer QA tasks. An open benchmark for agent memory, and a commercial corpus to evaluate and seed it.">
-<link rel="canonical" href="https://decisionsynth.com/">
-<meta property="og:title" content="DecisionSynth — decision memory data for AI agents">
-<meta property="og:description" content="An open, known-answer benchmark for agent memory — and the commercial decision corpus behind it.">
+<title>DecisionSynth: test whether your AI agent remembers client decisions</title>
+<meta name="description" content="A free benchmark and test data for AI agents in financial advice. Check whether your agent's memory can recall what was decided for a client, why, and under which rule, scored against answers known in advance.">
+<link rel="canonical" href="https://www.decisionsynth.com/">
+<meta property="og:title" content="Does your AI agent remember why? | DecisionSynth">
+<meta property="og:description" content="On 1,367 questions about client decisions, memory systems that summarize answered as few as 9% correctly. Test yours free.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://decisionsynth.com/">
+<meta property="og:url" content="https://www.decisionsynth.com/">
 <style>
   :root {
     --bg: #0d1117; --panel: #11161d; --border: #212931; --border-soft: #1a212b;
     --text: #dde5ee; --muted: #8995a4; --dim: #5c6672;
     --cyan: #22d3ee; --teal: #22d3a0; --blue: #60a5fa;
+    --bar: #0ea5c6; --bar-ref: #5c6672; --track: #1a212b;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -22,19 +23,21 @@
     font: 16px/1.6 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 640px) { .wrap { padding: 0 24px; } }
   code, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
   a { color: var(--cyan); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
-  header { padding: 72px 0 56px; border-bottom: 1px solid var(--border-soft);
+  header { padding: 64px 0 52px; border-bottom: 1px solid var(--border-soft);
     background: radial-gradient(ellipse 70% 60% at 75% -10%, rgba(34,211,238,0.10), transparent 70%); }
+  .brand { font-family: ui-monospace, Menlo, monospace; font-size: 15px; color: var(--text); margin-bottom: 40px; display: block; }
+  .brand span { color: var(--cyan); }
   .pill { display: inline-block; font-size: 11.5px; letter-spacing: .08em; padding: 6px 14px;
     border: 1px solid rgba(34,211,238,.25); border-radius: 999px; color: var(--cyan);
     background: rgba(34,211,238,.05); margin-bottom: 22px; font-family: ui-monospace, Menlo, monospace; }
-  h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.06; letter-spacing: -0.02em; margin-bottom: 12px; }
-  .tagline { font-size: 21px; font-weight: 600; color: var(--cyan); margin-bottom: 18px; }
-  .lede { font-size: 17.5px; color: var(--muted); max-width: 640px; margin-bottom: 30px; }
+  h1 { font-size: clamp(34px, 6.5vw, 56px); line-height: 1.06; letter-spacing: -0.02em; margin-bottom: 20px; }
+  .lede { font-size: 18px; color: var(--muted); max-width: 660px; margin-bottom: 30px; }
   .lede strong { color: var(--text); font-weight: 600; }
   .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
   .btn { display: inline-block; padding: 13px 24px; border-radius: 9px; font-weight: 600; font-size: 15.5px; }
@@ -45,13 +48,34 @@
   .checks { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 13.5px; color: #7a8696; }
   .checks span::before { content: "✓ "; color: var(--cyan); }
 
-  section { padding: 52px 0; }
+  section { padding: 56px 0; }
   section + section { border-top: 1px solid var(--border-soft); }
   .eyebrow { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; letter-spacing: .14em;
     color: var(--cyan); margin-bottom: 14px; }
-  h2 { font-size: 27px; letter-spacing: -0.015em; line-height: 1.2; margin-bottom: 12px; }
+  h2 { font-size: clamp(24px, 4vw, 30px); letter-spacing: -0.015em; line-height: 1.2; margin-bottom: 14px; }
   .body { color: var(--muted); max-width: 680px; }
   .body + .body { margin-top: 12px; }
+  .body strong { color: var(--text); font-weight: 600; }
+
+  .questions { list-style: none; margin-top: 24px; display: grid; gap: 10px; }
+  .questions li { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; font-size: 15px; color: var(--text); }
+  .questions li span { display: block; font-family: ui-monospace, Menlo, monospace; font-size: 10.5px;
+    letter-spacing: .12em; color: var(--dim); margin-bottom: 2px; }
+
+  /* Results chart: one measure (share answered exactly right), one row per system. */
+  .chart { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-top: 26px; }
+  .chart-title { font-size: 14.5px; font-weight: 600; margin-bottom: 18px; }
+  .row { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 16px; }
+  @media (min-width: 640px) { .row { grid-template-columns: 210px 1fr 88px; align-items: center; gap: 14px; margin-bottom: 12px; } }
+  .row .name { font-size: 14px; color: var(--text); }
+  .row .name small { display: block; font-size: 12px; color: var(--dim); }
+  .track { position: relative; height: 12px; background: var(--track); border-radius: 4px; }
+  .fill { position: absolute; top: 0; height: 12px; background: var(--bar); border-radius: 4px; }
+  .fill.ref { background: var(--bar-ref); }
+  .row .val { font-size: 14px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+  @media (min-width: 640px) { .row .val { text-align: right; } }
+  .chart-note { font-size: 12.5px; color: var(--dim); margin-top: 14px; line-height: 1.55; }
 
   .grid { display: grid; gap: 16px; margin-top: 26px; }
   @media (min-width: 720px) { .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
@@ -61,11 +85,17 @@
   .card h3 a:hover { color: var(--cyan); text-decoration: none; }
   .card p { font-size: 14px; color: var(--muted); }
   .card .k { font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; letter-spacing: .12em; margin-bottom: 10px; display: block; }
+  .step { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--cyan); margin-bottom: 8px; display: block; }
 
   .episode { background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
-    padding: 18px 20px; margin-top: 26px; overflow-x: auto; }
+    padding: 18px 20px; margin-top: 16px; overflow-x: auto; }
+  .episode-label { font-size: 13px; color: var(--dim); margin-top: 26px; }
   .episode pre { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; line-height: 1.75; color: var(--muted); }
   .tk { color: #7ee0ff; } .ts { color: #9ce29c; } .tn { color: #e2b96f; }
+
+  .faq { margin-top: 22px; display: grid; gap: 18px; max-width: 700px; }
+  .faq h3 { font-size: 16px; margin-bottom: 4px; }
+  .faq p { font-size: 15px; color: var(--muted); }
 
   footer { border-top: 1px solid var(--border-soft); padding: 36px 0 48px; font-size: 13px; color: var(--dim); }
   footer a { color: var(--dim); text-decoration: underline; }
@@ -76,47 +106,117 @@
 
 <header>
   <div class="wrap">
-    <div class="pill">DECISION MEMORY · BENCHMARK + CORPUS</div>
-    <h1>DecisionSynth</h1>
-    <p class="tagline">Decisions your agents can be graded on.</p>
+    <span class="brand">decision<span>synth</span></span>
+    <div class="pill">FOR TEAMS BUILDING AI AGENTS FOR FINANCIAL ADVICE</div>
+    <h1>Does your AI agent remember why?</h1>
     <p class="lede">
-      An AI assistant that forgets why a client overrode policy last spring is a liability.
-      DecisionSynth is synthetic decision-memory data for that problem: deterministic
-      advisor-decision episodes over synthetic households — trigger, options, override, outcome,
-      and the cited IRS/Treasury figure behind each choice — with QA tasks whose answers are
-      <strong>known by construction</strong>.
+      Good advice depends on history: what was decided for a client, why, and which rule applied.
+      DecisionSynth tests whether your agent's memory can answer those questions, using realistic
+      synthetic client decisions whose <strong>correct answers are known in advance</strong>.
     </p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="https://github.com/decisionsynth/decisionsynth-bench">Run the open benchmark</a>
-      <a class="btn btn-ghost" href="https://www.wealthschema.com/decisionsynth?utm_source=decisionsynth.com&amp;utm_medium=referral&amp;utm_campaign=decisionsynth-bench">Buy the corpus</a>
+      <a class="btn btn-primary" href="https://github.com/decisionsynth/decisionsynth-bench">Test your memory system free</a>
+      <a class="btn btn-ghost" href="https://www.wealthschema.com/decisionsynth?utm_source=decisionsynth.com&amp;utm_medium=referral&amp;utm_campaign=decisionsynth-bench">See the test data</a>
     </div>
     <div class="checks">
-      <span>Free dev set, CC BY 4.0</span>
-      <span>Baseline runs with zero API keys</span>
-      <span>Zero PII, no DUA</span>
+      <span>Free, open benchmark</span>
+      <span>No real client data</span>
+      <span>Scored against known answers</span>
     </div>
   </div>
 </header>
 
 <section>
   <div class="wrap">
-    <div class="eyebrow">THE BENCHMARK</div>
-    <h2>Known-answer, held-out, vendor-neutral.</h2>
+    <div class="eyebrow">THE PROBLEM</div>
+    <h2>Agent memory keeps the conversation and loses the decision.</h2>
     <p class="body">
-      Existing memory benchmarks test conversational recall. Real agent-memory failures are
-      decision-shaped: <em>why did we take the loan instead of the hardship withdrawal? which
-      clients overrode this policy, and did it survive review?</em> DecisionSynth Bench scores
-      exactly that — evidence retrieval and typed answer exact-match over five task types — with
-      answer keys emitted by the generator itself, never hand-labeled.
+      Memory systems save space by summarizing and extracting facts. In financial advice, the detail
+      they drop is often the one that matters: the reason a client broke from policy, or the limit
+      that applied that year. An agent that loses it contradicts earlier advice, repeats mistakes, and
+      can't explain itself to a compliance reviewer.
     </p>
     <p class="body">
-      The public scoreboard runs on a private held-out set over households disjoint from the free
-      dev set, so imitating the sample can't produce verified ground truth. The harness is open,
-      runs reproduce from a fresh clone, and fairness disputes are welcome by design.
+      Popular memory benchmarks test whether an agent recalls a conversation. DecisionSynth tests
+      whether it recalls <strong>decisions</strong>: questions like these.
     </p>
+    <ul class="questions">
+      <li><span>WHY</span>"Why did we take a 401(k) loan instead of a hardship withdrawal in March?"</li>
+      <li><span>PRECEDENT</span>"Which clients overrode this policy, and did the override hold up in review?"</li>
+      <li><span>WHICH RULE</span>"Which IRS limit governed that contribution?"</li>
+      <li><span>WHEN</span>"Which came first: the job change or the rollover?"</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">THE EVIDENCE</div>
+    <h2>We measured it. Memory that summarizes loses most of the answers.</h2>
+    <p class="body">
+      Each system stored the same 543 client decisions, then answered 1,367 questions about them
+      from whatever it kept. The test set is private and has never been published, so no system
+      could have trained on it.
+    </p>
+    <div class="chart" role="figure" aria-labelledby="chart-title" aria-describedby="chart-note">
+      <div class="chart-title" id="chart-title">Questions answered exactly right</div>
+
+      <div class="row" title="Verbatim baseline: 98%">
+        <div class="name">Keep everything verbatim<small>Reference baseline, no AI</small></div>
+        <div class="track"><div class="fill ref" style="left:0;width:98%"></div></div>
+        <div class="val">98%</div>
+      </div>
+      <div class="row" title="Letta archival memory: 92% with either model">
+        <div class="name">Letta<small>Archival memory, stores text as is</small></div>
+        <div class="track"><div class="fill" style="left:0;width:92%"></div></div>
+        <div class="val">92%</div>
+      </div>
+      <div class="row" title="mem0 (open source): 14% to 47% depending on the model">
+        <div class="name">mem0<small>Extracts facts from each memory</small></div>
+        <div class="track"><div class="fill" style="left:14%;width:33%"></div></div>
+        <div class="val">14–47%</div>
+      </div>
+      <div class="row" title="Zep Graphiti: 9% to 22% depending on the model">
+        <div class="name">Zep Graphiti<small>Builds a knowledge graph</small></div>
+        <div class="track"><div class="fill" style="left:9%;width:13%"></div></div>
+        <div class="val">9–22%</div>
+      </div>
+
+      <p class="chart-note" id="chart-note">
+        Held-out set, July 2026, run by the maintainers. A range means the result depends on which AI
+        model writes the memories (Gemini 2.5 Flash or Claude Haiku 4.5). The gap between a system and
+        the verbatim baseline is what its memory pipeline threw away.
+        <a href="https://github.com/decisionsynth/decisionsynth-bench/blob/main/bench/SCOREBOARD.md">Full scoreboard and configuration</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">HOW IT WORKS</div>
+    <h2>Load the decisions. Ask the questions. Score the answers.</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <span class="step">1 · LOAD</span>
+        <p>Feed a set of synthetic client decisions into your memory system. Each one records what
+          triggered it, the options, any override and its reason, the outcome, and the IRS or Treasury
+          figure behind it.</p>
+      </div>
+      <div class="card">
+        <span class="step">2 · ASK</span>
+        <p>Your agent answers five kinds of question: recall a decision, explain its reason, find
+          similar past cases, put events in order, and name the rule that applied.</p>
+      </div>
+      <div class="card">
+        <span class="step">3 · SCORE</span>
+        <p>Answers are checked against keys written by the same program that generated the decisions.
+          Nobody labels anything by hand, and no AI grades the answers.</p>
+      </div>
+    </div>
+    <p class="episode-label">What one decision looks like:</p>
     <div class="episode">
       <pre>{
-  <span class="tk">"episode_id"</span>: <span class="ts">"D3-A-01-seed-103-m63"</span>,
   <span class="tk">"trigger"</span>: <span class="ts">"promotion_or_raise"</span>,
   <span class="tk">"followed_policy"</span>: <span class="tn">false</span>,
   <span class="tk">"override_reason"</span>: <span class="ts">"bracket_timing_judgment"</span>,
@@ -129,26 +229,23 @@
 
 <section>
   <div class="wrap">
-    <div class="eyebrow">GET IT</div>
-    <h2>Three ways in.</h2>
+    <div class="eyebrow">WHO IT'S FOR</div>
+    <h2>Anyone who has to trust what an AI agent remembers about a client.</h2>
     <div class="grid grid-3">
       <div class="card">
-        <span class="k" style="color:var(--teal)">FREE · OPEN</span>
-        <h3><a href="https://github.com/decisionsynth/decisionsynth-bench">The benchmark</a></h3>
-        <p>Dev set (~590 episodes with answer keys), open schema, scoring harness, and a
-          no-API-key baseline. Apache-2.0 harness, CC BY 4.0 data.</p>
+        <h3>Wealth and advice platforms</h3>
+        <p>Adding an AI assistant for advisors or clients? Prove it remembers client history before
+          it goes live, and after every model upgrade.</p>
       </div>
       <div class="card">
-        <span class="k" style="color:var(--cyan)">ONE-TIME · FROM $495</span>
-        <h3><a href="https://www.wealthschema.com/decisionsynth?utm_source=decisionsynth.com&amp;utm_medium=referral&amp;utm_campaign=decisionsynth-bench">The commercial corpus</a></h3>
-        <p>1,979 episodes / 4,913 QA tasks over 1,752 fresh households — disjoint from both
-          benchmark sets. 30 bundle-matched packs or the full corpus, sold by WealthSchema.</p>
+        <h3>Agent-memory builders</h3>
+        <p>See exactly what your pipeline keeps and what it drops on decision-shaped data, with
+          scores you can reproduce from a fresh clone.</p>
       </div>
       <div class="card">
-        <span class="k" style="color:var(--blue)">PDF · UNGATED</span>
-        <h3><a href="https://www.wealthschema.com/decisionsynth/data-sheet?utm_source=decisionsynth.com&amp;utm_medium=referral&amp;utm_campaign=decisionsynth-bench">The data sheet</a></h3>
-        <p>Two pages: specs, episode anatomy, pricing, and the calibrated-vs-authored honesty
-          table. Made to be forwarded to the person who signs off.</p>
+        <h3>AI evaluation and model risk</h3>
+        <p>A documented, repeatable result for the approval file, instead of a reviewer reading
+          transcripts by eye.</p>
       </div>
     </div>
   </div>
@@ -156,24 +253,69 @@
 
 <section>
   <div class="wrap">
-    <div class="eyebrow">STAY IN THE LOOP</div>
-    <h2>Scoreboard updates, new rows, corpus versions.</h2>
-    <p class="body">
-      Watch the <a href="https://github.com/decisionsynth/decisionsynth-bench">GitHub repo</a> for
-      scoreboard updates, or email
-      <a href="mailto:support@wealthschema.com?subject=DecisionSynth%20updates">support@wealthschema.com</a>
-      to hear when new vendor rows and corpus versions land. A free watermarked household sample is
-      at <a href="https://www.wealthschema.com/sample?utm_source=decisionsynth.com&amp;utm_medium=referral&amp;utm_campaign=decisionsynth-bench">wealthschema.com/sample</a>.
-    </p>
+    <div class="eyebrow">GET STARTED</div>
+    <h2>Start free. Buy data when you need more.</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <span class="k" style="color:var(--teal)">FREE · OPEN SOURCE</span>
+        <h3><a href="https://github.com/decisionsynth/decisionsynth-bench">The benchmark</a></h3>
+        <p>About 590 sample decisions with answers, the scoring code, and a baseline that runs with
+          no API keys, so you get a first score in minutes.</p>
+      </div>
+      <div class="card">
+        <span class="k" style="color:var(--cyan)">ONE-TIME · FROM $495</span>
+        <h3><a href="https://www.wealthschema.com/decisionsynth?utm_source=decisionsynth.com&amp;utm_medium=referral&amp;utm_campaign=decisionsynth-bench">The test data</a></h3>
+        <p>1,979 decisions and 4,913 questions over 1,752 synthetic households, none of them in the
+          benchmark. Test before launch, or give a new agent a realistic decision history.</p>
+      </div>
+      <div class="card">
+        <span class="k" style="color:var(--blue)">PDF · NO SIGN-UP</span>
+        <h3><a href="https://www.wealthschema.com/decisionsynth/data-sheet?utm_source=decisionsynth.com&amp;utm_medium=referral&amp;utm_campaign=decisionsynth-bench">The data sheet</a></h3>
+        <p>Two pages covering what's included, how it's built, and pricing. Made to forward to
+          whoever approves the purchase.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">QUESTIONS</div>
+    <h2>Before you ask</h2>
+    <div class="faq">
+      <div>
+        <h3>Is any real client data involved?</h3>
+        <p>No. Every household and every decision is synthetic. There is no personal data and no
+          data-use agreement to sign.</p>
+      </div>
+      <div>
+        <h3>How do you keep the scoreboard fair?</h3>
+        <p>Public results come from a private set of households that has never been released, so no
+          system can train on the answers. The scoring code is open, and anyone can rerun it.</p>
+      </div>
+      <div>
+        <h3>How realistic are the decisions?</h3>
+        <p>Household finances and tax figures are calibrated to public sources such as the Federal
+          Reserve's Survey of Consumer Finances and IRS publications. How often advisors override
+          policy is set by us, not measured, and the
+          <a href="https://github.com/decisionsynth/decisionsynth-bench/blob/main/METHODOLOGY.md">methodology</a>
+          says so. Scores don't depend on those rates.</p>
+      </div>
+      <div>
+        <h3>Who's behind it?</h3>
+        <p><a href="https://www.wealthschema.com/?utm_source=decisionsynth.com&amp;utm_medium=referral&amp;utm_campaign=decisionsynth-bench">WealthSchema</a>,
+          which builds synthetic data and benchmarks for wealth software. Questions:
+          <a href="mailto:support@wealthschema.com?subject=DecisionSynth">support@wealthschema.com</a>.</p>
+      </div>
+    </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
     DecisionSynth is a product line of <a href="https://www.wealthschema.com/?utm_source=decisionsynth.com&amp;utm_medium=referral&amp;utm_campaign=decisionsynth-bench">WealthSchema</a>,
-    which stewards the benchmark and sells the corpus. All data is synthetic — no real persons, accounts, or PII.
-    Advisor behavior in the corpus is authored, not calibrated; the disclosure lives in the
-    <a href="https://github.com/decisionsynth/decisionsynth-bench/blob/main/METHODOLOGY.md">methodology</a>.
+    which runs the benchmark and sells the test data. All data is synthetic: no real people, accounts,
+    or personal information.
   </div>
 </footer>
 
